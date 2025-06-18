@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-5">
+  <div class="row">
+    <!-- Sidebar Filters -->
+    <aside class="col-md-3">
+      <div class="bg-white shadow rounded p-4">
+        <h5 class="fw-bold mb-4">Filter by Category</h5>
+        <form method="get">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="category" value="phone" id="phone" {% if 'phone' in selected_categories %}checked{% endif %}>
+            <label class="form-check-label" for="phone">Phones</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="category" value="headphone" id="headphone" {% if 'headphone' in selected_categories %}checked{% endif %}>
+            <label class="form-check-label" for="case">Headphone</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="category" value="accessory" id="accessory" {% if 'accessory' in selected_categories %}checked{% endif %}>
+            <label class="form-check-label" for="accessory">Accessories</label>
+          </div>
+          <div class="d-grid gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a href="{% url 'products' %}" class="btn btn-outline-secondary">Clear Filters</a>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Product Listing -->
+    <main class="col-md-9">
+      <h2 class="text-center fw-bold mb-4" style="color: #004d40; font-size: 2rem;">Explore Our Collection</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for product in products %}
+          <div class="col">
+            <div class="card h-100 border-0 shadow rounded-4 overflow-hidden position-relative" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
+              <a href="/products/{{ product.id }}/" class="stretched-link"></a>
+              <div class="position-relative" style="aspect-ratio: 1/1; background: #f9f9f9;">
+                <img src="{{ product.image.url }}" class="card-img-top img-fluid p-3" alt="{{ product.title }}" style="object-fit: contain; height: 100%; width: 100%;">
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-center fw-semibold mb-2" style="color: #004d40; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  {{ product.title }}
+                </h5>
+                <p class="text-center fw-bold mb-3" style="color: #00796b; font-size: 1.2rem;">PKR {{ product.price }}</p>
+                <div class="btn btn-outline-primary w-100 mt-auto disabled">
+                  View Details
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

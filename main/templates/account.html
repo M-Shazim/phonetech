@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">My Account</h2>
+  <div class="card shadow-sm p-4">
+    <h5>Hello, {{ user.username }}!</h5>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Date Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+
+<form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-outline-danger mt-3">
+    <i class="bi bi-box-arrow-right"></i> Logout
+  </button>
+</form>
+
+  </div>
+</div>
+{% endblock %}

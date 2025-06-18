@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row g-5 align-items-center">
+    <!-- Product Image Section -->
+    <div class="col-lg-6">
+      <div class="position-relative rounded-4 overflow-hidden shadow-lg" style="aspect-ratio: 5/4; max-width: 600px; margin: 0 auto;">
+        <img src="{{ product.image.url }}" class="img-fluid w-100 h-100" alt="{{ product.title }}" style="object-fit: cover; transition: transform 0.5s ease;">
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 30, 60, 0.3) 0%, rgba(0, 0, 0, 0) 50%);"></div>
+        {% if product.is_special %}
+          <span class="position-absolute top-0 start-0 m-3 badge rounded-pill" style="background-color: #1565c0; color: white; font-size: 0.85rem; padding: 6px 12px; font-weight: 500;">Exclusive</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Product Details Section -->
+    <div class="col-lg-6">
+      <h1 class="fw-bold mb-3" style="color: #0d1b2a; font-size: 2.5rem; line-height: 1.2;">{{ product.title }}</h1>
+      <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.7; font-weight: 400;">{{ product.description }}</p>
+      <h3 class="fw-bold mb-4" style="color: #1565c0; font-size: 2rem;">PKR: {{ product.price }}</h3>
+
+      <form method="POST" action="{% url 'add_to_cart' product.id %}" class="d-flex flex-column gap-4">
+        {% csrf_token %}
+        <div>
+          <label for="quantity" class="form-label fw-medium" style="color: #0d1b2a; font-size: 1rem;">Select Quantity</label>
+          <input type="number" name="quantity" class="form-control rounded-3" value="1" min="1" style="max-width: 120px; border: 1px solid #ced4da; font-size: 1rem; padding: 8px; transition: border-color 0.3s ease;">
+        </div>
+        <button type="submit" class="btn position-relative overflow-hidden" style="background: linear-gradient(90deg, #1565c0, #64b5f6); color: white; border-radius: 10px; padding: 12px; font-weight: 600; font-size: 1.1rem; border: none; transition: transform 0.3s ease;">
+          <span class="position-relative z-1">Add to Cart</span>
+          <span class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(90deg, #0d47a1, #1565c0); opacity: 0; transition: opacity 0.3s ease;"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Specifications Section -->
+  <div class="mt-5">
+    <h4 class="fw-bold mb-3" style="color: #0d1b2a;">Product Specifications</h4>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><strong>Category:</strong> {{ product.get_category_display }}</li>
+      <li class="list-group-item"><strong>Tags:</strong> {{ product.tags }}</li>
+      <li class="list-group-item"><strong>Stock:</strong> {{ product.stock }} units available</li>
+    </ul>
+  </div>
+
+  <!-- Customer Reviews Section -->
+  <div class="mt-5">
+    <h4 class="fw-bold mb-3" style="color: #0d1b2a;">Customer Reviews</h4>
+    <div class="d-flex flex-column gap-3">
+      {% for review in product.reviews.all %}
+        <div class="border p-3 rounded-3 shadow-sm">
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold">{{ review.user.username|default:"Anonymous" }}</span>
+            <span class="text-muted">{{ review.date }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="text-warning">
+              {% for i in "12345"|slice:":review.rating" %}<i class="bi bi-star-fill"></i>{% endfor %}
+              {% for i in "12345"|slice:"review.rating:" %}<i class="bi bi-star"></i>{% endfor %}
+            </div>
+            <span class="fw-semibold">{{ review.rating }} / 5</span>
+          </div>
+          <p class="mt-2">{{ review.comment }}</p>
+        </div>
+      {% empty %}
+        <p>No reviews yet. Be the first to review this product!</p>
+      {% endfor %}
+    </div>
+
+    <!-- Review Submission Section -->
+    {% if user.is_authenticated %}
+      <div class="mt-4">
+        <h5 class="fw-bold mb-2">Leave a Review</h5>
+        <form method="POST" action="{% url 'add_review' product.id %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <select name="rating" id="rating" class="form-select">
+              {% for i in "12345" %}
+              <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea name="comment" id="comment" rows="4" class="form-control" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
