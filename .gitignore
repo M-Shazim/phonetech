@@ -1,0 +1,17 @@
+# Ignore SQLite database
+db.sqlite3
+
+# Ignore SQLite database backups
+*.sqlite3.bak
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+env/
+venv/
+
+# Ignore VSCode and other editor settings
+.vscode/
+.idea/
