@@ -19,6 +19,10 @@
 
 
   <style>
+      .color-swatch.selected {
+    border: 3px solid #1565c0 !important;
+    box-shadow: 0 0 5px rgba(21, 101, 192, 0.7);
+  }
     body {
       font-family: 'Outfit', sans-serif;
       background-color: #f5f7fa;
@@ -142,6 +146,17 @@
       font-size: 0.9rem;
       padding-top: 1rem;
     }
+    #whatsapp-float button:hover {
+  background-color: #128c7e !important;
+  transition: background-color 0.3s ease;
+}
+
+#whatsapp-chat-popup textarea:focus {
+  outline: none;
+  border-color: #25D366;
+  box-shadow: 0 0 6px #25D366;
+}
+
   </style>
 </head>
 
@@ -245,6 +260,63 @@
     </div>
   </div>
 </footer>
+
+<!-- WhatsApp Floating Button -->
+<div id="whatsapp-float" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+  <button id="whatsapp-btn" class="btn btn-success rounded-circle shadow" style="width: 56px; height: 56px; font-size: 28px; display: flex; align-items: center; justify-content: center;">
+    <i class="bi bi-whatsapp"></i>
+  </button>
+</div>
+
+<!-- WhatsApp Chat Popup -->
+<div id="whatsapp-chat-popup" style="display:none; position: fixed; bottom: 90px; right: 20px; width: 320px; max-width: 90vw; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1060; font-family: 'Outfit', sans-serif;">
+  <div style="padding: 12px 16px; background: #25D366; color: white; border-top-left-radius: 10px; border-top-right-radius: 10px; font-weight: 600; font-size: 1.1rem;">
+    Chat with us on WhatsApp
+    <button id="whatsapp-close" style="float: right; background: transparent; border: none; color: white; font-size: 1.3rem; cursor: pointer;">&times;</button>
+  </div>
+  <form id="whatsapp-chat-form" style="padding: 16px;">
+    <textarea id="whatsapp-message" rows="4" placeholder="Type your message here..." style="width: 100%; resize: none; padding: 8px; font-size: 1rem; border-radius: 6px; border: 1px solid #ccc;" required></textarea>
+    <button type="submit" class="btn btn-success w-100 mt-3" style="font-weight: 600;">Send</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+    const whatsappPopup = document.getElementById('whatsapp-chat-popup');
+    const whatsappClose = document.getElementById('whatsapp-close');
+    const whatsappForm = document.getElementById('whatsapp-chat-form');
+    const whatsappMessage = document.getElementById('whatsapp-message');
+    const whatsappNumber = '923106958010';  // Your WhatsApp number with country code, no plus sign
+
+    whatsappBtn.addEventListener('click', () => {
+      whatsappPopup.style.display = whatsappPopup.style.display === 'none' ? 'block' : 'none';
+      if(whatsappPopup.style.display === 'block'){
+        whatsappMessage.focus();
+      }
+    });
+
+    whatsappClose.addEventListener('click', () => {
+      whatsappPopup.style.display = 'none';
+    });
+
+    whatsappForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const msg = encodeURIComponent(whatsappMessage.value.trim());
+      if (msg.length === 0) {
+        alert("Please type a message.");
+        return;
+      }
+      // Redirect user to WhatsApp chat with message
+      const url = `https://wa.me/${whatsappNumber}?text=${msg}`;
+      window.open(url, '_blank');
+      whatsappMessage.value = '';
+      whatsappPopup.style.display = 'none';
+    });
+  });
+</script>
+
+
 
 
   <!-- Bootstrap JS -->

@@ -47,11 +47,22 @@
           <li class="list-group-item d-flex justify-content-between">
             <div>
               {{ item.product.title }}<br>
-              <small class="text-muted">Qty: {{ item.quantity }}</small>
+              <small class="text-muted">
+                Qty: {{ item.quantity }}<br>
+                Color:
+                {% if item.color %}
+                {{ item.color.name }}
+                <span
+                  style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:{{ item.color.hex }}; border:1px solid #ccc; margin-left:5px;"></span>
+                {% else %}
+                N/A
+                {% endif %}
+              </small>
             </div>
             <span>PKR: {{ item.subtotal }}</span>
           </li>
           {% endfor %}
+
           <li class="list-group-item d-flex justify-content-between fw-bold">
             Total
             <span>PKR: {{ total }}</span>

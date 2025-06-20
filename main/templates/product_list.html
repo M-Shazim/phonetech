@@ -14,7 +14,7 @@
           </div>
           <div class="form-check mb-2">
             <input class="form-check-input" type="checkbox" name="category" value="headphone" id="headphone" {% if 'headphone' in selected_categories %}checked{% endif %}>
-            <label class="form-check-label" for="case">Headphone</label>
+            <label class="form-check-label" for="headphone">Headphone</label>
           </div>
           <div class="form-check mb-2">
             <input class="form-check-input" type="checkbox" name="category" value="accessory" id="accessory" {% if 'accessory' in selected_categories %}checked{% endif %}>
@@ -33,23 +33,37 @@
       <h2 class="text-center fw-bold mb-4" style="color: #004d40; font-size: 2rem;">Explore Our Collection</h2>
       <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for product in products %}
-          <div class="col">
-            <div class="card h-100 border-0 shadow rounded-4 overflow-hidden position-relative" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
-              <a href="/products/{{ product.id }}/" class="stretched-link"></a>
-              <div class="position-relative" style="aspect-ratio: 1/1; background: #f9f9f9;">
-                <img src="{{ product.image.url }}" class="card-img-top img-fluid p-3" alt="{{ product.title }}" style="object-fit: contain; height: 100%; width: 100%;">
-              </div>
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title text-center fw-semibold mb-2" style="color: #004d40; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  {{ product.title }}
-                </h5>
-                <p class="text-center fw-bold mb-3" style="color: #00796b; font-size: 1.2rem;">PKR {{ product.price }}</p>
-                <div class="btn btn-outline-primary w-100 mt-auto disabled">
-                  View Details
-                </div>
-              </div>
+        <div class="col">
+          <div class="card h-100 border-0 shadow rounded-4 overflow-hidden position-relative"
+            style="transition: transform 0.3s ease, box-shadow 0.3s ease;">
+            
+            <div class="position-relative" style="aspect-ratio: 1/1; background: #f9f9f9;">
+              <img src="{{ product.image.url }}" class="card-img-top img-fluid p-3" alt="{{ product.title }}"
+                style="object-fit: contain; height: 100%; width: 100%;">
             </div>
+
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title text-center fw-semibold mb-2"
+                style="color: #004d40; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                {{ product.title }}
+              </h5>
+              <p class="text-center fw-bold mb-3" style="color: #00796b; font-size: 1.2rem;">PKR {{ product.price }}</p>
+
+              <!-- View Details Button -->
+              <a href="/products/{{ product.id }}/" class="btn btn-outline-primary w-100 mb-2">
+                View Details
+              </a>
+
+              <!-- Add to Cart Form -->
+              <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+              </form>
+            </div>
+
           </div>
+        </div>
         {% endfor %}
       </div>
     </main>
