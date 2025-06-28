@@ -1,5 +1,53 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Warranty Policy</h2>
-<p>All smartphones come with a 1-year warranty against manufacturing defects. Accessories and headphones carry a 6-month warranty.</p>
+<div class="container mt-5 mb-5">
+  <h2 class="mb-3">Warranty Policy</h2>
+  <p>We stand behind the quality of our products. Please review the warranty coverage below for different product categories:</p>
+
+  <h4 class="mt-4">Warranty Coverage</h4>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Product Category</th>
+          <th>Warranty Duration</th>
+          <th>Coverage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Smartphones</td>
+          <td>1 Year</td>
+          <td>Manufacturing defects (hardware & software), excluding physical or liquid damage</td>
+        </tr>
+        <tr>
+          <td>Accessories (Chargers, Cables, etc.)</td>
+          <td>6 Months</td>
+          <td>Manufacturing defects only</td>
+        </tr>
+        <tr>
+          <td>Headphones / Earphones</td>
+          <td>6 Months</td>
+          <td>Audio-related defects, excluding wire damage or water exposure</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">Warranty Claim Process</h4>
+  <ul>
+    <li>To raise a warranty claim, contact us at <a href="mailto:Phonetech.click@gmail.com">Phonetech.click@gmail.com</a> with your order ID and issue details.</li>
+    <li>Physical inspection may be required before processing the claim.</li>
+    <li>Warranty is void if the product has been physically damaged, water-damaged, or tampered with.</li>
+  </ul>
+
+  <h4 class="mt-4">Important Notes</h4>
+  <ul>
+    <li>Warranty claims must be made within the stated period from the date of purchase.</li>
+    <li>This policy does not cover accidental or intentional damage.</li>
+    <li>Warranty services may take 7–14 business days depending on the product and issue.</li>
+  </ul>
+
+  <p class="mt-4">For more assistance, please reach out to our support team.</p>
+</div>
 {% endblock %}

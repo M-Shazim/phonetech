@@ -35,6 +35,9 @@ urlpatterns = [
     path('contact/', contact_view, name='contact'),
     path('refund/', refund_policy_view, name='refund'),
     path('terms/', terms_conditions_view, name='terms'),
+    path('cancellation-policy/', cancellation_policy, name='cancellation_policy'),
+    path('delivery-policy/', delivery_policy, name='delivery_policy'),
+
 
     # Auth
     # path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),

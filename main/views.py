@@ -15,6 +15,13 @@ def clear_whatsapp_session(request):
         del request.session['whatsapp_link']
     return HttpResponse("Session cleared")
 
+def cancellation_policy(request):
+    return render(request, 'cancellation_policy.html')
+
+def delivery_policy(request):
+    return render(request, 'delivery_policy.html')
+
+
 
 
 
