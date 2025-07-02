@@ -14,6 +14,16 @@
 
 ---
 
+## Features
+
+- Login/Authentication
+- Cart Features
+- Session Management
+- Admin Panel with all Models access
+- Order Redirection via Whatsapp
+
+---
+
 ## Folder Structure
 
 - ├── main/ # Homepage, contact, main functionalities
