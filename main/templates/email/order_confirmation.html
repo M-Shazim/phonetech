@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; }
+    .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; }
+    h2 { color: #28a745; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
+    th { background-color: #f8f9fa; }
+    .total-row { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📦 PhoneTech Order Confirmation</h2>
+    <p>Hi {{ first_name }} {{ last_name }},</p>
+    <p>Thank you for your order! Here are the details:</p>
+
+    <h4>Shipping Information</h4>
+    <p>
+      <strong>Email:</strong> {{ email }}<br>
+      <strong>Address:</strong> {{ address }}
+    </p>
+
+    <h4>Order Summary</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td>{{ item.title }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>PKR {{ item.subtotal|floatformat:0 }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td colspan="2">Total</td>
+          <td>PKR {{ total|floatformat:0 }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 20px;">We will contact you soon for delivery arrangements.</p>
+    <p>For further details contact: +92 3106958010</p>
+    <p>🚚 Thank you for shopping with <strong>PhoneTech</strong>!</p>
+  </div>
+</body>
+</html>

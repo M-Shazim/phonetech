@@ -54,6 +54,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'phonetech.urls'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'phonetech.click@gmail.com'
+EMAIL_HOST_PASSWORD = 'dbcp mcqh tgbw flgu'  # use App Password, not account password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

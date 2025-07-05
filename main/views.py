@@ -9,6 +9,13 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponse
 from urllib.parse import quote
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Order, CartItem, Cart, Product, Color  # adjust imports as per your project
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+
 
 def clear_whatsapp_session(request):
     if 'whatsapp_link' in request.session:
@@ -471,6 +478,15 @@ def checkout_view(request):
 #         'total': total
 #     })
 
+from urllib.parse import quote
+
+from django.shortcuts import render, redirect
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
+from urllib.parse import quote
+from .models import CartItem, Cart, Product, Color, Order
+
 def place_order_view(request):
     if request.method == 'POST':
         # Extract form data
@@ -483,10 +499,11 @@ def place_order_view(request):
 
         cart_items = []
         total = 0
+        user_cart = None
 
         if request.user.is_authenticated:
-            # Use DB cart
-            db_cart = CartItem.objects.filter(cart__user=request.user)
+            user_cart, _ = Cart.objects.get_or_create(user=request.user)
+            db_cart = CartItem.objects.filter(cart=user_cart)
             if not db_cart.exists():
                 return redirect('cart')
 
@@ -501,11 +518,11 @@ def place_order_view(request):
                 })
 
         else:
-            # Use session cart
             session_cart = request.session.get('cart', {})
             if not session_cart:
                 return redirect('cart')
 
+            user_cart = Cart.objects.create()
             for key, quantity in session_cart.items():
                 try:
                     product_id, color_id = key.split('_')
@@ -513,8 +530,8 @@ def place_order_view(request):
                     color = Color.objects.get(id=color_id)
                     color_name = f" ({color.name})"
                 except Exception:
-                    # fallback if color or key is invalid
                     product = Product.objects.get(id=key if '_' not in key else key.split('_')[0])
+                    color = None
                     color_name = ""
 
                 subtotal = product.price * quantity
@@ -525,7 +542,23 @@ def place_order_view(request):
                     'subtotal': subtotal,
                 })
 
-        # Compose WhatsApp message
+                CartItem.objects.create(
+                    cart=user_cart,
+                    product=product,
+                    quantity=quantity,
+                    color=color
+                )
+
+        # Save order in DB
+        Order.objects.create(
+            cart=user_cart,
+            user=request.user if request.user.is_authenticated else None,
+            name=f"{first_name} {last_name}",
+            email=email,
+            address=f"{address}, {city}, {postal_code}"
+        )
+
+        # Prepare WhatsApp message
         message_lines = [
             f"📦 *New Order Received!*",
             f"👤 Name: {first_name} {last_name}",
@@ -535,14 +568,34 @@ def place_order_view(request):
         ]
         for item in cart_items:
             message_lines.append(f"- {item['title']} x{item['quantity']} = PKR {item['subtotal']:.0f}")
-
         message_lines.append(f"\n💰 *Total:* PKR {total:.0f}")
         message_lines.append(f"\n🚚 *Thank you for ordering with PhoneTech!*")
-
         message = "\n".join(message_lines)
+
+        # Send email with HTML
+        html_content = render_to_string('email/order_confirmation.html', {
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'address': f"{address}, {city}, {postal_code}",
+            'cart_items': cart_items,
+            'total': total,
+        })
+
+        email_subject = 'Your PhoneTech Order Confirmation'
+        email_from = settings.DEFAULT_FROM_EMAIL
+        email_to = [email, 'phonetech.click@gmail.com']  # User + your own email
+
+        email_msg = EmailMultiAlternatives(email_subject, "", email_from, email_to)
+        email_msg.attach_alternative(html_content, "text/html")
+        try:
+            email_msg.send()
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+
+        # WhatsApp link
         whatsapp_number = '923106958010'
         whatsapp_link = f"https://wa.me/{whatsapp_number}?text={quote(message)}"
-
         request.session['whatsapp_link'] = whatsapp_link
 
         # Clear cart
@@ -552,6 +605,90 @@ def place_order_view(request):
             request.session['cart'] = {}
 
         return redirect('order_success')
+
+
+
+# def place_order_view(request):
+#     if request.method == 'POST':
+#         # Extract form data
+#         first_name = request.POST.get('first_name')
+#         last_name = request.POST.get('last_name')
+#         email = request.POST.get('email')
+#         address = request.POST.get('address')
+#         city = request.POST.get('city')
+#         postal_code = request.POST.get('postal_code')
+
+#         cart_items = []
+#         total = 0
+
+#         if request.user.is_authenticated:
+#             # Use DB cart
+#             db_cart = CartItem.objects.filter(cart__user=request.user)
+#             if not db_cart.exists():
+#                 return redirect('cart')
+
+#             for item in db_cart:
+#                 subtotal = item.product.price * item.quantity
+#                 total += subtotal
+#                 color_name = f" ({item.color.name})" if item.color else ""
+#                 cart_items.append({
+#                     'title': f"{item.product.title}{color_name}",
+#                     'quantity': item.quantity,
+#                     'subtotal': subtotal,
+#                 })
+
+#         else:
+#             # Use session cart
+#             session_cart = request.session.get('cart', {})
+#             if not session_cart:
+#                 return redirect('cart')
+
+#             for key, quantity in session_cart.items():
+#                 try:
+#                     product_id, color_id = key.split('_')
+#                     product = Product.objects.get(id=product_id)
+#                     color = Color.objects.get(id=color_id)
+#                     color_name = f" ({color.name})"
+#                 except Exception:
+#                     # fallback if color or key is invalid
+#                     product = Product.objects.get(id=key if '_' not in key else key.split('_')[0])
+#                     color_name = ""
+
+#                 subtotal = product.price * quantity
+#                 total += subtotal
+#                 cart_items.append({
+#                     'title': f"{product.title}{color_name}",
+#                     'quantity': quantity,
+#                     'subtotal': subtotal,
+#                 })
+
+#         # Compose WhatsApp message
+#         message_lines = [
+#             f"📦 *New Order Received!*",
+#             f"👤 Name: {first_name} {last_name}",
+#             f"📧 Email: {email}",
+#             f"🏠 Address: {address}, {city}, {postal_code}",
+#             "\n🛒 *Items:*"
+#         ]
+#         for item in cart_items:
+#             message_lines.append(f"- {item['title']} x{item['quantity']} = PKR {item['subtotal']:.0f}")
+
+#         message_lines.append(f"\n💰 *Total:* PKR {total:.0f}")
+#         message_lines.append(f"\n🚚 *Thank you for ordering with PhoneTech!*")
+
+#         message = "\n".join(message_lines)
+#         whatsapp_number = '923106958010'
+#         whatsapp_link = f"https://wa.me/{whatsapp_number}?text={quote(message)}"
+
+#         request.session['whatsapp_link'] = whatsapp_link
+
+#         # Clear cart
+#         if request.user.is_authenticated:
+#             CartItem.objects.filter(cart__user=request.user).delete()
+#         else:
+#             request.session['cart'] = {}
+
+#         return redirect('order_success')
 
 
 # def place_order_view(request):
